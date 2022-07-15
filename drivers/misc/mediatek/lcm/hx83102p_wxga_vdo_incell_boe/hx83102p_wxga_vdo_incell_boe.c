@@ -444,6 +444,8 @@ static void lcm_init_lcm(void)
 	MDELAY(5);
 	//register
 	sgm37604a_write_byte(0x11, 0x00);
+	sgm37604a_write_byte(0x1A, 0);
+	sgm37604a_write_byte(0x19, 0);
 	MDELAY(10);
 
 	push_table(lcm_initinal_setting,

@@ -319,6 +319,8 @@ extern struct LCM_DRIVER nt36672ah_hdp_dsi_vdo_tcl_csot_lcm_drv;
 extern struct LCM_DRIVER nt36672ah_hdp_dsi_vdo_tcl_csot_fwvplus_lcm_drv;
 extern struct LCM_DRIVER sofeg01_fhdplus_dsi_cmd_samsung_lcm_drv;
 
+extern struct LCM_DRIVER ft8009_6735_dsi_lcm_drv_yk6xx;
+
 #if defined(NT36672C_FHDP_DSI_VDO_AUO_CPHY_90HZ_TIANMA)
 extern struct LCM_DRIVER nt36672c_fhdp_dsi_vdo_auo_cphy_90hz_tianma_lcm_drv;
 #endif
@@ -338,6 +340,10 @@ extern struct LCM_DRIVER hx83102p_wxga_vdo_incell_boe_lcm_drv;
 extern struct LCM_DRIVER otm1911a_fhdp_dsi_vdo_truly_rt4801_lcm_drv;
 extern struct LCM_DRIVER nt36672c_fhdp_dsi_vdo_120hz_shenchao_6382_lcm_drv;
 extern struct LCM_DRIVER nt36672c_fhdp_dsi_vdo_auo_cphy_90hz_jdi_lcm_drv;
+
+extern struct LCM_DRIVER icnl9911sac_6735_dsi_lcm_drv_yk6xx;
+extern struct LCM_DRIVER ili9881d_6735_dsi_lcm_drv_yk6xx;
+extern struct LCM_DRIVER ili9882_6735_dsi_lcm_drv_yk6xx;
 
 #ifdef BUILD_LK
 extern void mdelay(unsigned long msec);
