@@ -539,6 +539,23 @@ firmware_class.path=/vendor/firmware";
 			alloc-ranges = <0 0xc0000000 0 0x10000000>;
 		};
 
+#if defined(CONFIG_MICROTRUST_TEE_SUPPORT) || \
+	defined(CONFIG_MICROTRUST_TEE_LITE_SUPPORT)
+		soter-shared-mem {
+			compatible = "microtrust,shared_mem";
+			no-map;
+#if defined(CONFIG_MTK_SEC_VIDEO_PATH_SUPPORT) || \
+	defined(CONFIG_MTK_CAM_SECURITY_SUPPORT)
+			size = <0 0x800000>;
+			alignment = <0 0x1000000>;
+#else
+			size = <0 0x200000>;
+			alignment = <0 0x200000>;
+#endif
+			alloc-ranges = <0 0x40000000 0 0x50000000>;
+		};
+#endif
+
 	};
 
 	cpu_dbgapb: cpu_dbgapb@0d410000 {
@@ -1025,17 +1042,25 @@ firmware_class.path=/vendor/firmware";
 	};
 
 	touch: touch {
-		compatible = "goodix,touch";
+		compatible = "mediatek,touch","goodix,touch";
 	};
 
 	accdet: accdet {
 		compatible = "mediatek,pmic-accdet";
 	};
 
+	/*ICN fingerprint*/
+	icnfpsensor:icnfpsensor@0 {
+		compatible = "mediatek,icnfpsensor";
+	};
 	goodix_fp: fingerprint {
 		compatible = "mediatek,goodix-fp";
 	};
-
+	/*add by focaltech start*/
+	focaltech_fp: focaltech_fp {
+        compatible = "focaltech,focaltech_fp";
+	};
+	/*add by focaltech end*/
 	topmisc@10011000 {
 		compatible = "mediatek,topmisc";
 		reg = <0 0x10011000 0 0x1000>;
@@ -2985,7 +3010,12 @@ firmware_class.path=/vendor/firmware";
 		reg = <0 0x14015000 0 0x1000>;
 		interrupts = <GIC_SPI 276 IRQ_TYPE_LEVEL_LOW>;
 	};
-
+	flashlights_constant_gpio: flashlights_constant_gpio {
+		compatible = "mediatek,flashlights_constant_gpio";
+	};
+	lcd_id_node: lcd_id {
+		compatible = "mediatek,lcd_id_gpio";
+	};
 	mtkfb: mtkfb@0 {
 		compatible = "mediatek,mtkfb";
 	};
@@ -3328,7 +3358,7 @@ firmware_class.path=/vendor/firmware";
 
 	flashlights_mt6370: flashlights_mt6370 {
 		compatible = "mediatek,flashlights_mt6370";
-		decouple = <0>;
+		decouple = <1>;
 		channel@1 {
 			type = <0>;
 			ct = <0>;
@@ -3367,11 +3397,11 @@ firmware_class.path=/vendor/firmware";
 		/* charging current */
 		usb_charger_current = <500000>;
 		ac_charger_current = <2000000>;
-		ac_charger_input_current = <1500000>;
-		non_std_ac_charger_current = <500000>;
-		charging_host_charger_current = <1500000>;
+		ac_charger_input_current = <2000000>;
+		non_std_ac_charger_current = <2000000>;
+		charging_host_charger_current = <2000000>;
 		ta_ac_charger_current = <3000000>;
-		pd_charger_current = <500000>;
+		pd_charger_current = <2000000>;
 
 		/* battery temperature protection */
 		temp_t4_threshold = <50>;
@@ -3395,12 +3425,13 @@ firmware_class.path=/vendor/firmware";
 		ta_ac_9v_input_current = <3200000>;
 		ta_ac_7v_input_current = <3200000>;
 		pe_charger_current = <3000000>;
+		status = "disabled";
 	};
 
 	pe2: pe2 {
 		compatible = "mediatek,charger,pe2";
 		gauge = <&mtk_gauge>;
-
+		status = "disabled";
 		/* PE 2.0 */
 		pe20_ichg_level_threshold = <1000000>; /* uA */
 		ta_start_battery_soc = <0>;
@@ -3453,7 +3484,7 @@ firmware_class.path=/vendor/firmware";
 	pe4: pe4 {
 		compatible = "mediatek,charger,pe4";
 		gauge = <&mtk_gauge>;
-
+		status = "disabled";
 		min_charger_voltage = <4600000>;
 		pe40_stop_battery_soc = <80>;
 
@@ -3484,7 +3515,7 @@ firmware_class.path=/vendor/firmware";
 	charger: charger {
 		compatible = "mediatek,charger";
 		gauge = <&mtk_gauge>;
-		charger = <&mt6370_chg>;
+		charger = <&mtk_charger_type>;
 		bootmode = <&chosen>;
 		pmic = <&main_pmic>;
 
@@ -3492,9 +3523,9 @@ firmware_class.path=/vendor/firmware";
 		charger_configuration= <0>;
 
 		/* common */
-		battery_cv = <4350000>;
+		battery_cv = <4400000>;
 		max_charger_voltage = <6500000>;
-		min_charger_voltage = <4600000>;
+		min_charger_voltage = <4400000>;
 
 		/* sw jeita */
 		/* enable_sw_jeita; */
@@ -3520,14 +3551,14 @@ firmware_class.path=/vendor/firmware";
 		enable_min_charge_temp;
 		min_charge_temp = <0>;
 		min_charge_temp_plus_x_degree = <6>;
-		max_charge_temp = <50>;
-		max_charge_temp_minus_x_degree = <47>;
+		max_charge_temp = <55>;
+		max_charge_temp_minus_x_degree = <50>;
 
 		/* charging current */
 		usb_charger_current = <500000>;
 		ac_charger_current = <2000000>;
-		ac_charger_input_current = <1500000>;
-		charging_host_charger_current = <1500000>;
+		ac_charger_input_current = <2000000>;
+		charging_host_charger_current = <2000000>;
 
 		/* dynamic mivr */
 		enable_dynamic_mivr;
