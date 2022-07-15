@@ -23,3 +23,6 @@ obj-$(CONFIG_TOUCHSCREEN_MTK_FOCALTECH_FHD)	+=  focaltech_fhd_touch/
 obj-$(CONFIG_TOUCHSCREEN_MTK_GT9157)    +=  GT9157/
 obj-$(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET) += hxchipset_hx83102p/
 obj-$(CONFIG_TOUCHSCREEN_GOODIX_BRL) += goodix_berlin_driver/
+
+# Teracube MT6765 Chipone TDDI panel.
+obj-y += chipone/

@@ -10,6 +10,8 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/fb.h>
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
 #ifdef CONFIG_MTK_MT6306_GPIO_SUPPORT
 #include <mtk_6306_gpio.h>
 #endif
@@ -35,6 +37,27 @@
 #define COMPAT_TPD_GET_FILTER_PARA _IOWR(TOUCH_IOC_MAGIC, \
 						2, struct tpd_filter_t)
 #endif
+char mtk_tp_info[128];
+
+static int tpd_info_show(struct seq_file *m, void *unused)
+{
+	seq_printf(m, "%s\n", mtk_tp_info);
+	return 0;
+}
+
+static int tpd_info_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, tpd_info_show, NULL);
+}
+
+static const struct file_operations tpd_info_fops = {
+	.owner = THIS_MODULE,
+	.open = tpd_info_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
+
 struct tpd_filter_t tpd_filter;
 struct tpd_dts_info tpd_dts_data;
 struct pinctrl *pinctrl1;
@@ -561,6 +584,7 @@ static int tpd_probe(struct platform_device *pdev)
 	}
 	/* TPD_RES_X = simple_strtoul(LCM_WIDTH, NULL, 0); */
 	/* TPD_RES_Y = simple_strtoul(LCM_HEIGHT, NULL, 0); */
+	proc_create("driver/tp_info", 0444, NULL, &tpd_info_fops);
 
 	#ifdef CONFIG_MTK_LCM_PHYSICAL_ROTATION
 	if (strncmp(CONFIG_MTK_LCM_PHYSICAL_ROTATION, "90", 2) == 0

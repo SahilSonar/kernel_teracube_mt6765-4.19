@@ -73,6 +73,8 @@ endif
 ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT5688),y)
 obj-$(CONFIG_TOUCHSCREEN_MTK)		+= mediatek/
 endif
+# Teracube MT6765 builds its ODM Chipone TDDI driver from this directory.
+obj-y += mediatek/
 obj-$(CONFIG_TOUCHSCREEN_MTK_NT36572_COMMON)   +=  nt36572_common/
 obj-$(CONFIG_TOUCHSCREEN_MIGOR)		+= migor_ts.o
 obj-$(CONFIG_TOUCHSCREEN_MMS114)	+= mms114.o
