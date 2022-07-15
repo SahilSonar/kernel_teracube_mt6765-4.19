@@ -1003,6 +1003,7 @@ extern bool is_algo_active(struct mtk_battery *gm);
 extern int disable_shutdown_cond(struct mtk_battery *gm, int shutdown_cond);
 extern int set_shutdown_cond(struct mtk_battery *gm, int shutdown_cond);
 extern bool is_kernel_power_off_charging(void);
+extern bool is_factory_mode(void);
 extern void set_shutdown_vbat_lt(struct mtk_battery *gm,
 	int vbat_lt, int vbat_lt_lv1);
 extern void fg_sw_bat_cycle_accu(struct mtk_battery *gm);

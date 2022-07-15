@@ -1564,6 +1564,8 @@ static char *dump_charger_type(int type)
 	}
 }
 
+int g_battery_temp = 0;
+
 static int charger_routine_thread(void *arg)
 {
 	struct mtk_charger *info = arg;
@@ -1591,6 +1593,7 @@ static int charger_routine_thread(void *arg)
 		info->charger_thread_timeout = false;
 
 		info->battery_temp = get_battery_temperature(info);
+		g_battery_temp = info->battery_temp;
 		chr_err("Vbat=%d vbus:%d ibus:%d I=%d T=%d uisoc:%d type:%s>%s pd:%d\n",
 			get_battery_voltage(info),
 			get_vbus(info),

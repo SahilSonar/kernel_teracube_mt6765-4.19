@@ -772,6 +772,16 @@ config CHARGER_RT9458
 	  It depends on
 	  the config MTK_CHARGER.
 
+config MTK_ETA6937_SUPPORT
+	bool "MTK_ETA6937_SUPPORT"
+	depends on I2C && MTK_CHARGER
+	default n
+	help
+	  This is to enable MediaTek supports to ETA6937.
+	  It depends on config MTK_SMART_BATTERY
+	  and config MTK_SWCHR_SUPPORT
+	  Set to Yes if ETA6937 is used.
+
 config CHARGER_RT9465
 	bool "Charger Driver for Richtek RT9465 Charger IC"
 	depends on MTK_CHARGER

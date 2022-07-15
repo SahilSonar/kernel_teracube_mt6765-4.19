@@ -325,6 +325,7 @@ extern int mtk_pulse_charger_init(struct mtk_charger *info);
 extern int get_uisoc(struct mtk_charger *info);
 extern int get_battery_voltage(struct mtk_charger *info);
 extern int get_battery_temperature(struct mtk_charger *info);
+extern int g_battery_temp;
 extern int get_battery_current(struct mtk_charger *info);
 extern int get_vbus(struct mtk_charger *info);
 extern int get_ibus(struct mtk_charger *info);

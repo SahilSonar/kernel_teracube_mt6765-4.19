@@ -205,6 +205,17 @@ bool is_kernel_power_off_charging(void)
 	return false;
 }
 
+bool is_factory_mode(void)
+{
+	struct mtk_battery *gm = get_mtk_battery();
+
+	if (!gm)
+		return false;
+
+	bm_debug("%s, bootmode = %d\n", __func__, gm->bootmode);
+	return gm->bootmode == 4 || gm->bootmode == 6;
+}
+
 /* ============================================================ */
 /* power supply: battery */
 /* ============================================================ */
