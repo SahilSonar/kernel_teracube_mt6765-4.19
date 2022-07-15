@@ -863,6 +863,9 @@ static int mtk_spi_probe(struct platform_device *pdev)
 				goto err_put_master;
 			}
 		}
+#ifdef CONFIG_FPC_FINGERPRINT
+		master->num_chipselect = mdata->pad_num;  //added:multi spi device by Armin 20210201
+#endif
 	}
 
 	pm_qos_add_request(&mdata->spi_qos_request, PM_QOS_CPU_DMA_LATENCY,
@@ -968,12 +971,14 @@ static int mtk_spi_probe(struct platform_device *pdev)
 			goto err_disable_runtime_pm;
 		}
 
+#ifndef CONFIG_FPC_FINGERPRINT
 		if (!master->cs_gpios && master->num_chipselect > 1) {
 			dev_err(&pdev->dev,
 				"cs_gpios not specified and num_chipselect > 1\n");
 			ret = -EINVAL;
 			goto err_disable_runtime_pm;
 		}
+#endif
 
 		if (master->cs_gpios) {
 			for (i = 0; i < master->num_chipselect; i++) {
