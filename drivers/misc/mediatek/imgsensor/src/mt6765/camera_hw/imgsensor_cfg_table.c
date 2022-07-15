@@ -28,9 +28,9 @@ struct IMGSENSOR_HW_CFG imgsensor_custom_config[] = {
 		IMGSENSOR_I2C_DEV_0,
 		{
 			{IMGSENSOR_HW_ID_MCLK, IMGSENSOR_HW_PIN_MCLK},
-			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_AVDD},
+			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_AVDD},
 			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DOVDD},
-			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_DVDD},
+			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DVDD},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_PDN},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_RST},
 			{IMGSENSOR_HW_ID_NONE, IMGSENSOR_HW_PIN_NONE},
@@ -43,7 +43,7 @@ struct IMGSENSOR_HW_CFG imgsensor_custom_config[] = {
 			{IMGSENSOR_HW_ID_MCLK, IMGSENSOR_HW_PIN_MCLK},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_AVDD},
 			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DOVDD},
-			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_DVDD},
+			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DVDD},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_PDN},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_RST},
 			{IMGSENSOR_HW_ID_NONE, IMGSENSOR_HW_PIN_NONE},
@@ -54,7 +54,7 @@ struct IMGSENSOR_HW_CFG imgsensor_custom_config[] = {
 		IMGSENSOR_I2C_DEV_2,
 		{
 			{IMGSENSOR_HW_ID_MCLK, IMGSENSOR_HW_PIN_MCLK},
-			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_AVDD},
+			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_AVDD},
 			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DOVDD},
 			{IMGSENSOR_HW_ID_REGULATOR, IMGSENSOR_HW_PIN_DVDD},
 			{IMGSENSOR_HW_ID_GPIO, IMGSENSOR_HW_PIN_PDN},
@@ -188,6 +188,38 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 			{RST, Vol_High, 5},
 		},
 	},
+#endif
+#if defined(HI846_MIPI_RAW) //xen 20171023, same with SP8409
+		{
+			SENSOR_DRVNAME_HI846_MIPI_RAW,
+			{
+				{SensorMCLK, Vol_High, 0},
+				{PDN, Vol_Low, 1},
+				{RST, Vol_Low, 10},
+				{DOVDD, Vol_1800, 5},
+				{DVDD, Vol_1200, 5},
+				{AVDD, Vol_2800, 5},
+				{AFVDD, Vol_2800, 5},
+				{PDN, Vol_High, 5},
+				{RST, Vol_High, 5}
+			},
+		},
+#endif
+#if defined(HI846_2LANE_MIPI_RAW) 
+		{
+			SENSOR_DRVNAME_HI846_2LANE_MIPI_RAW,
+			{
+				{SensorMCLK, Vol_High, 0},
+				{PDN, Vol_Low, 1},
+				{RST, Vol_Low, 10},
+				{DOVDD, Vol_1800, 5},
+				{DVDD, Vol_1200, 5},
+				{AVDD, Vol_2800, 5},
+				{AFVDD, Vol_2800, 5},
+				{PDN, Vol_High, 5},
+				{RST, Vol_High, 5}
+			},
+		},
 #endif
 #if defined(IMX386_MIPI_MONO)
 	{
@@ -621,6 +653,23 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 		},
 	},
 #endif
+#if defined(IMX350_MIPI_RAW)
+	{
+		SENSOR_DRVNAME_IMX350_MIPI_RAW,
+		{
+			{SensorMCLK, Vol_High, 0},
+			{AVDD, Vol_2800, 10},
+			{DOVDD, Vol_1800, 10},
+			{DVDD, Vol_1000, 10},
+			{AFVDD, Vol_2800, 5},
+			{PDN, Vol_Low, 0},
+			{PDN, Vol_High, 0},
+			{RST, Vol_Low, 0},
+			{RST, Vol_High, 0}
+		},
+	},
+#endif
+
 #if defined(S5K3M3_MIPI_RAW)
 	{
 		SENSOR_DRVNAME_S5K3M3_MIPI_RAW,
@@ -681,6 +730,22 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 			{RST, Vol_High, 5}
 		},
 	},
+#endif
+#if defined(S5K3L6_MIPI_RAW)
+		{
+			SENSOR_DRVNAME_S5K3L6_MIPI_RAW,
+			{
+				{SensorMCLK, Vol_High, 0},
+				{PDN, Vol_Low, 1},
+				{RST, Vol_Low, 10},
+				{DOVDD, Vol_1800, 5},
+				{AVDD, Vol_2800, 5},
+				{DVDD, Vol_1200, 5},
+				{AFVDD, Vol_2800, 1},
+				{PDN, Vol_High, 5},
+				{RST, Vol_High, 5}
+			},
+		},
 #endif
 	/* add new sensor before this line */
 	{NULL,},

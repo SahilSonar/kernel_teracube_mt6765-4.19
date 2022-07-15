@@ -48,6 +48,12 @@
 #include "imgsensor_clk.h"
 #include "imgsensor.h"
 
+// light start
+#include <linux/proc_fs.h>   /* proc file use */
+#include <linux/seq_file.h>
+// light end
+ 
+
 #define PDAF_DATA_SIZE 4096
 
 #ifdef CONFIG_MTK_SMI_EXT
@@ -434,6 +440,76 @@ imgsensor_sensor_close(struct IMGSENSOR_SENSOR *psensor)
 	return ret ? -EIO : ret;
 }
 
+//add by ybx for camera info
+ 
+// light start
+#define PROC_MAIN_CAM_INFO "driver/camera_info_main"
+#define PROC_SUB_CAM_INFO "driver/camera_info_sub"
+#define PROC_MAIN2_CAM_INFO "driver/camera_info_main2"
+
+#define cam_info_size 50
+
+char mtk_main_cam_name[50] = {0};
+char mtk_sub_cam_name[50] = {0};
+char mtk_main2_cam_name[50] = {0};
+
+
+//main camera
+static int subsys_main_cam_info_read(struct seq_file *m, void *v)
+{
+   seq_printf(m, "%s\n",mtk_main_cam_name);
+   return 0;
+};
+
+static int proc_main_cam_info_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, subsys_main_cam_info_read, NULL);
+};
+
+static  struct file_operations cam_proc_fops_main = {
+    .owner = THIS_MODULE,
+    .open  = proc_main_cam_info_open,
+    .read  = seq_read,
+};
+
+//sub camera
+static int subsys_sub_cam_info_read(struct seq_file *m, void *v)
+{
+   seq_printf(m, "%s\n",mtk_sub_cam_name);
+   return 0;
+};
+
+static int proc_sub_cam_info_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, subsys_sub_cam_info_read, NULL);
+};
+
+static  struct file_operations cam_proc_fops_sub = {
+    .owner = THIS_MODULE,
+    .open  = proc_sub_cam_info_open,
+    .read  = seq_read,
+};
+
+static int subsys_main2_cam_info_read(struct seq_file *m, void *v)
+{
+   seq_printf(m, "%s\n",mtk_main2_cam_name);
+   return 0;
+};
+
+static int proc_main2_cam_info_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, subsys_main2_cam_info_read, NULL);
+};
+
+static  struct file_operations cam_proc_fops_main2 = {
+    .owner = THIS_MODULE,
+    .open  = proc_main2_cam_info_open,
+    .read  = seq_read,
+};
+// light end
+ 
+//add end
+
 /************************************************************************
  * imgsensor_check_is_alive
  ************************************************************************/
@@ -463,6 +539,20 @@ static inline int imgsensor_check_is_alive(struct IMGSENSOR_SENSOR *psensor)
 		err = ERROR_SENSOR_CONNECT_FAIL;
 	} else {
 		pr_info(" Sensor found ID = 0x%x\n", sensorID);
+		#if 1 
+		if (psensor->inst.sensor_idx == IMGSENSOR_SENSOR_IDX_MAIN)
+		{
+			snprintf(mtk_main_cam_name,sizeof(mtk_main_cam_name),"%s",psensor_inst->psensor_name); 
+		}
+		else if (psensor->inst.sensor_idx == IMGSENSOR_SENSOR_IDX_SUB)
+		{
+			snprintf(mtk_sub_cam_name,sizeof(mtk_sub_cam_name),"%s",psensor_inst->psensor_name); 
+		}
+		else if (psensor->inst.sensor_idx == IMGSENSOR_SENSOR_IDX_MAIN2)
+		{
+			snprintf(mtk_main2_cam_name,sizeof(mtk_main2_cam_name),"%s",psensor_inst->psensor_name); 
+		}
+		#endif
 		err = ERROR_NONE;
 	}
 
@@ -2950,7 +3040,14 @@ static int imgsensor_probe(struct platform_device *pdev)
 	imgsensor_hw_init(&pgimgsensor->hw);
 	imgsensor_i2c_create();
 	imgsensor_proc_init();
-
+// light start
+       memset(mtk_main_cam_name,0,cam_info_size);
+       memset(mtk_sub_cam_name,0,cam_info_size);
+       memset(mtk_main2_cam_name,0,cam_info_size);
+       proc_create(PROC_MAIN_CAM_INFO, 0, NULL, &cam_proc_fops_main);
+       proc_create(PROC_SUB_CAM_INFO, 0, NULL, &cam_proc_fops_sub);
+       proc_create(PROC_MAIN2_CAM_INFO, 0, NULL, &cam_proc_fops_main2);
+// light end
 	atomic_set(&pgimgsensor->imgsensor_open_cnt, 0);
 #ifdef CONFIG_MTK_SMI_EXT
 	mmdvfs_register_mmclk_switch_cb(
