@@ -49,6 +49,17 @@ endif
     ifeq ($(CONFIG_MTK_COMBO), y)
         ccflags-y += -D CFG_CONNADP_BUILD_IN
     endif
+    # MT6765 connectivity module settings.
+    export CONFIG_MTK_COMBO_WIFI_HIF=axi
+    export MTK_COMBO_CHIP=CONNAC
+    export BT_PLATFORM=connac1x
+    export WLAN_CHIP_ID=6765
+    export MTK_ANDROID_WMT=y
+    export MTK_ANDROID_EMI=y
+    export WIFI_IP_SET=1
+    export WIFI_ECO_VER=1
+    export MTK_WLAN_SERVICE=yes
+
     ifeq ($(CONFIG_WLAN_DRV_BUILD_IN),y)
         subdir-ccflags-y += -D MTK_WCN_REMOVE_KERNEL_MODULE
         subdir-ccflags-y += -D MTK_WCN_BUILT_IN_DRIVER
