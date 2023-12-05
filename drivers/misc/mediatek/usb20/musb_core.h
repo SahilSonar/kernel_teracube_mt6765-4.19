@@ -40,6 +40,7 @@ extern enum charger_type mt_get_charger_type(void);
 struct musb;
 struct musb_hw_ep;
 struct musb_ep;
+struct dual_role_phy_instance;
 extern int musb_fake_CDP;
 extern int musb_force_on;
 extern int musb_host_dynamic_fifo;
@@ -318,6 +319,13 @@ struct musb_context_registers {
  * struct musb - Driver instance data.
  */
 struct musb {
+#ifdef CONFIG_DUAL_ROLE_USB_INTF
+	struct dual_role_phy_instance *dr_usb;
+#endif
+#ifdef CONFIG_MACH_MT6765
+	unsigned int efuse_val;
+	void (*usb_rev6_setting)(int value);
+#endif
 	struct semaphore musb_lock;
 	/* device lock */
 	spinlock_t lock;

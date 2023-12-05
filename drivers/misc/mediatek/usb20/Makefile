@@ -59,9 +59,11 @@ obj-$(CONFIG_USB_MTK_HDRC)		+= musbhsdma.o
 
 #Platform
 obj-y += $(usb20plat)/
+ifneq ($(usb20plat),mt6765)
 obj-$(CONFIG_USB_MTK_HDRC)		+= $(usb20plat)/usb20.o
 obj-$(CONFIG_USB_MTK_HDRC)		+= $(usb20plat)/usb20_host.o
 obj-$(CONFIG_USBIF_COMPLIANCE)		+= $(usb20plat)/usb20_otg_if.o
+endif
 
 # QMU Realted
 musb_hdrc-$(CONFIG_MTK_MUSB_QMU_SUPPORT)+= mtk_qmu.o musb_qmu.o
@@ -74,3 +76,5 @@ endif
 
 subdir-ccflags-$(CONFIG_MACH_MT6781) += -DUSB2_PHY_V2
 subdir-ccflags-$(CONFIG_MACH_MT6833) += -DUSB2_PHY_V2
+
+obj-$(CONFIG_DUAL_ROLE_USB_INTF) += mtk_dual_role.o

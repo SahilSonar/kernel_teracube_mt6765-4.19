@@ -82,6 +82,7 @@ config MTK_MUSB_PORT0_LOWPOWER_MODE
 
 config MTK_MUSB_DUAL_ROLE
 	bool "Mediatek MUSB Dual Role mode support"
+	depends on !MACH_MT6765
 	select USB_ROLE_SWITCH
 	help
 	  This is the default mode of working of MTK MUSB controller

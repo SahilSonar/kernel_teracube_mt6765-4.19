@@ -2388,6 +2388,10 @@ static int musb_init_controller
 	}
 
 	mtk_musb = musb;
+#ifndef CONFIG_MACH_MT6765
+	glue->mtk_musb = mtk_musb;
+	mtk_musb->glue = glue;
+#endif
 	sema_init(&musb->musb_lock, 1);
 	pm_runtime_use_autosuspend(musb->controller);
 	pm_runtime_set_autosuspend_delay(musb->controller, 200);
@@ -2399,8 +2403,6 @@ static int musb_init_controller
 	musb->ops = plat->platform_ops;
 	musb->nIrq = nIrq;
 
-	glue->mtk_musb = mtk_musb;
-	mtk_musb->glue = glue;
 
 	/* The musb_platform_init() call:
 	 *   - adjusts musb->mregs
@@ -2555,7 +2557,12 @@ static int musb_init_controller
 	 * Therefore, no need to power off MUSB when Dual-role-switch is
 	 * enabled.
 	 */
+#ifdef CONFIG_MACH_MT6765
+	/* Legacy MT6765 OTG is initialized by the platform driver. */
+	status = 0;
+#else
 	status = mt_usb_otg_switch_init(glue);
+#endif
 	if (status < 0) {
 		DBG(0, "failed to initialize switch\n");
 		goto fail3;
@@ -2648,6 +2655,10 @@ static int musb_probe(struct platform_device *pdev)
 	pr_info("%s mac=0x%lx, phy=0x%lx, irq=%d\n"
 		, __func__, (unsigned long)base, (unsigned long)pbase, irq);
 	status = musb_init_controller(dev, irq, base, pbase);
+#ifdef CONFIG_MACH_MT6765
+	if (!status)
+		mtk_musb->efuse_val = usb_phy_get_efuse_val(dev);
+#endif
 
 	return status;
 }

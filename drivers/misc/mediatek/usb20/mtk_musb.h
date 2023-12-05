@@ -6,7 +6,7 @@
 #ifndef __MUSB_MTK_MUSB_H__
 #define __MUSB_MTK_MUSB_H__
 
-#ifdef CONFIG_MTK_MUSB_PHY
+#if defined(CONFIG_MTK_MUSB_PHY) || defined(CONFIG_MACH_MT6765)
 #ifdef CONFIG_OF
 extern struct musb *mtk_musb;
 
@@ -39,7 +39,21 @@ extern struct musb *mtk_musb;
 	USBPHY_WRITE32(offset, (USBPHY_READ32(offset)) & (~(mask)))
 
 #endif /* End of CONFIG_OF define */
-#endif /* End of CONFIG_MTK_MUSB_PHY */
+#endif /* CONFIG_MTK_MUSB_PHY or CONFIG_MACH_MT6765 */
+
+struct musb;
+struct device;
+
+#ifdef CONFIG_MACH_MT6765
+/* Legacy MT6765 MUSB platform hooks. */
+extern bool usb_enable_clock(bool enable);
+extern void usb_phy_savecurrent(void);
+extern void usb_phy_recover(struct musb *musb);
+extern unsigned int usb_phy_get_efuse_val(struct device *dev);
+extern void usb_rev6_setting(int value);
+extern void musb_platform_reset(struct musb *musb);
+extern int kernel_init_done;
+#endif
 
 struct musb;
 
@@ -67,7 +81,15 @@ extern void musb_sync_with_bat(struct musb *musb, int usb_state);
 bool is_saving_mode(void);
 
 /* host and otg */
+#ifdef CONFIG_MACH_MT6765
+extern void mt_usb_otg_init(struct musb *musb);
+extern void mt_usb_otg_exit(struct musb *musb);
+#endif
 extern void mt_usb_init_drvvbus(void);
+#ifdef CONFIG_MACH_MT6765
+extern void mt_usb_set_vbus_legacy(struct musb *musb, int is_on);
+extern int mt_usb_get_vbus_status(struct musb *musb);
+#endif
 extern void mt_usb_iddig_int(struct musb *musb);
 extern void switch_int_to_device(struct musb *musb);
 extern void switch_int_to_host(struct musb *musb);
