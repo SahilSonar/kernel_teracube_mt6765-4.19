@@ -36,6 +36,7 @@ obj-$(CONFIG_MTK_PMIC_WRAP_HAL) += pmic_wrap/
 obj-y += devinfo/
 obj-y += subpmic/
 obj-$(CONFIG_MTK_TINYSYS_MCUPM_SUPPORT) += mcupm/
+obj-y += met_drv_v2/
 obj-$(CONFIG_MTK_BASE_POWER) += base/
 obj-$(CONFIG_MTK_SERIAL)	+= uart/
 obj-$(CONFIG_MTK_PWM)	    += pwm/
@@ -191,3 +192,5 @@ obj-$(CONFIG_MTK_MDDP_SUPPORT) += mddp/
 obj-$(CONFIG_MTK_GATE_IC) += gate_ic/
 obj-$(CONFIG_MTK_FREQ_HOPPING) += freqhopping/
 obj-$(CONFIG_ARCH_MEDIATEK) += mboot_params/
+
+obj-$(CONFIG_MTK_FPSGO_V3) += fpsgo_cus/
