@@ -1248,6 +1248,7 @@ static void mtk_chg_get_tchg(struct mtk_charger *info)
 	}
 }
 
+unsigned int yk_stop_percent = 100;
 static void charger_check_status(struct mtk_charger *info)
 {
 	bool charging = true;
@@ -1324,6 +1325,14 @@ static void charger_check_status(struct mtk_charger *info)
 		charging = false;
 	if (info->vbusov_stat)
 		charging = false;
+
+	//充电限制功能
+	if((get_uisoc(info) >= yk_stop_percent) && (yk_stop_percent < 100))//todo 100% not stop
+	{
+		printk("trx eta6937,battery_get_uisoc >= %d\n",yk_stop_percent);
+		charging = false;
+		goto stop_charging;
+	}
 
 stop_charging:
 	mtk_battery_notify_check(info);
