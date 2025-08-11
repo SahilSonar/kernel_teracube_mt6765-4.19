@@ -309,11 +309,6 @@ static int battery_psy_get_property(struct power_supply *psy,
 			gauge_get_int_property(GAUGE_PROP_BATTERY_CURRENT)
 			* 100;
 		break;
-	case POWER_SUPPLY_PROP_CHARGE_FULL:
-		val->intval =
-			gm->fg_table_cust_data.fg_profile[
-				gm->battery_id].q_max * 1000;
-		break;
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = gm->ui_soc *
 			gm->fg_table_cust_data.fg_profile[
@@ -357,26 +352,8 @@ static int battery_psy_get_property(struct power_supply *psy,
 		}
 		ret = 0;
 		break;
+	case POWER_SUPPLY_PROP_CHARGE_FULL:
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-		if (check_cap_level(bs_data->bat_capacity) ==
-			POWER_SUPPLY_CAPACITY_LEVEL_UNKNOWN)
-			val->intval = 0;
-		else {
-			int q_max_mah = 0;
-			int q_max_uah = 0;
-
-			q_max_mah =
-				gm->fg_table_cust_data.fg_profile[
-				gm->battery_id].q_max / 10;
-
-			q_max_uah = q_max_mah * 1000;
-			if (q_max_uah <= 100000) {
-				bm_debug("%s q_max_mah:%d q_max_uah:%d\n",
-					__func__, q_max_mah, q_max_uah);
-				q_max_uah = 100001;
-			}
-			val->intval = q_max_uah;
-		}
 		val->intval = 10000000;
 		break;
 
