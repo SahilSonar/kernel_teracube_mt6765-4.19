@@ -78,6 +78,8 @@
 
 #define I2C_ID_NAME "st21nfc"
 
+#define MAX_RETRY_COUNT 3
+
 #ifdef KRNMTKLEGACY_I2C
 #include <linux/dma-mapping.h>
 #define NFC_CLIENT_TIMING 400 /* I2C speed */
@@ -566,6 +568,7 @@ static ssize_t st21nfc_dev_write(struct file *filp, const char __user *buf,
 		filp->private_data, struct st21nfc_device, st21nfc_device);
 	char *tmp = NULL;
 	int ret = count;
+        int retry_cnt = 0;
 
 	if (enable_debug_log) {
 		//pr_debug("%s: st21nfc_dev ptr %p\n", __func__, st21nfc_dev);
@@ -590,12 +593,28 @@ static ssize_t st21nfc_dev_write(struct file *filp, const char __user *buf,
 	/* st21nfc_dev->platform_data.client->ext_flag |= I2C_DIRECTION_FLAG; */
 	/* st21nfc_dev->platform_data.client->ext_flag |= I2C_A_FILTER_MSG; */
 	st21nfc_dev->client->timing = NFC_CLIENT_TIMING;
+	while (retry_cnt < MAX_RETRY_COUNT) {
+		ret = i2c_master_send(st21nfc_dev->client,
+				      (unsigned char *)(uintptr_t)I2CDMAWriteBuf_pa,
+				      count);
+		if (ret == count)
+			break;
+		pr_err("%s : i2c_master_send returned %d (retry_cnt = %d)\n",
+		       __func__, ret, retry_cnt);
+		usleep_range(10000, 11000);
+		retry_cnt++;
+	}
 
-	ret = i2c_master_send(st21nfc_dev->client,
-			      (unsigned char *)(uintptr_t)I2CDMAWriteBuf_pa,
-			      count);
 #else
-	ret = i2c_master_send(st21nfc_dev->client, tmp, count);
+	while (retry_cnt < MAX_RETRY_COUNT) {
+		ret = i2c_master_send(st21nfc_dev->client, tmp, count);
+		if (ret == count)
+			break;
+		pr_err("%s : i2c_master_send returned %d (retry_cnt = %d)\n",
+		       __func__, ret, retry_cnt);
+		usleep_range(10000, 11000);
+		retry_cnt++;
+	}
 #endif
 	if (ret != count) {
 		pr_err("%s : i2c_master_send returned %d\n", __func__, ret);
