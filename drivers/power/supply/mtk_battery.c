@@ -354,7 +354,7 @@ static int battery_psy_get_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL:
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-		val->intval = 10000000;
+		val->intval = 4000000;
 		break;
 
 	default:
