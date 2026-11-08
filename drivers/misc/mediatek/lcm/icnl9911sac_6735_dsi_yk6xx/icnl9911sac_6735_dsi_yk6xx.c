@@ -95,6 +95,7 @@ static struct LCM_UTIL_FUNCS lcm_util = {0};
 #define UDELAY(n) 											(lcm_util.udelay(n))
 #define MDELAY(n) 											(lcm_util.mdelay(n))
 #define YK_LCM_5V_IC_SUPPORT
+#define TOUCHPANEL_GESTURE
 
 // ---------------------------------------------------------------------------
 //  Local Functions
@@ -109,7 +110,7 @@ static struct LCM_UTIL_FUNCS lcm_util = {0};
 #define read_reg_v2(cmd, buffer, buffer_size)   			lcm_util.dsi_dcs_read_lcm_reg_v2(cmd, buffer, buffer_size)    
 
 #if defined(TOUCHPANEL_GESTURE) //xjl 20191105
-extern u8 gesture_open_state;
+extern int gesture_open_state;
 #endif
 
 #ifdef YK_LCM_5V_IC_SUPPORT
