@@ -416,7 +416,7 @@ out:
 	return ret;
 }
 
-static int __tee_ns_shm_vma_fault(struct vm_fault *vmf)
+static vm_fault_t __tee_ns_shm_vma_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
 	struct tee_shm *shm = (struct tee_shm *) vma->vm_private_data;
