@@ -206,6 +206,14 @@ void fg_daemon_send_data(struct mtk_battery *gm,
 				struct fgd_cmd_param_t_custom),
 				prcv->total_size);
 			}
+			if (prcv->idx > sizeof(struct fgd_cmd_param_t_custom) ||
+			    prcv->size > sizeof(struct fgd_cmd_param_t_custom) - prcv->idx ||
+			    prcv->size > sizeof(prcv->input)) {
+				bm_err("size is different %d size %d idx %d\n",
+					(int)sizeof(struct fgd_cmd_param_t_custom),
+					prcv->size, prcv->idx);
+				return;
+			}
 
 			ptr = (char *)&gm->fg_data;
 			memcpy(&ptr[prcv->idx],
@@ -257,6 +265,17 @@ void fg_daemon_get_data(int cmd,
 	{
 		char *ptr;
 
+		if (prcv->idx > sizeof(struct fuel_gauge_custom_data) ||
+			    prcv->size > sizeof(struct fuel_gauge_custom_data) - prcv->idx ||
+			    prcv->size > sizeof(prcv->input)) {
+			bm_err("%s size is different %d %d %d\n",
+			__func__,
+			(int)sizeof(
+			struct fuel_gauge_custom_data),
+			prcv->idx, prcv->size);
+			return;
+		}
+
 		if (sizeof(struct fuel_gauge_custom_data)
 			!= prcv->total_size) {
 			bm_err("%s size is different %d %d\n",
@@ -284,6 +303,17 @@ void fg_daemon_get_data(int cmd,
 	case FG_DAEMON_CMD_GET_CUSTOM_TABLE:
 		{
 			char *ptr;
+
+			if (prcv->idx > sizeof(struct fuel_gauge_table_custom_data) ||
+			    prcv->size > sizeof(struct fuel_gauge_table_custom_data) - prcv->idx ||
+			    prcv->size > sizeof(prcv->input)) {
+				bm_err("%s size is different %d %d %d\n",
+				__func__,
+				(int)sizeof(
+				struct fuel_gauge_table_custom_data),
+				prcv->idx, prcv->size);
+				return;
+			}
 
 			if (sizeof(struct fuel_gauge_table_custom_data)
 				!= prcv->total_size) {

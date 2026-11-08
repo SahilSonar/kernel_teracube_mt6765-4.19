@@ -2929,6 +2929,14 @@ void fg_daemon_send_data(
 			}
 
 			ptr = (char *)&gm.fg_data;
+			if (prcv->idx > sizeof(struct fgd_cmd_param_t_custom) ||
+			    prcv->size > sizeof(struct fgd_cmd_param_t_custom) - prcv->idx ||
+			    prcv->size > sizeof(prcv->input)) {
+				bm_err("size is different %d size %d idx %d\n",
+					(int)sizeof(struct fgd_cmd_param_t_custom),
+					prcv->size, prcv->idx);
+				return;
+			}
 			memcpy(&ptr[prcv->idx],
 				prcv->input,
 				prcv->size);
@@ -2968,7 +2976,6 @@ void fg_daemon_get_data(
 		prcv->total_size,
 		prcv->size,
 		prcv->idx);
-
 		pret->type = prcv->type;
 		pret->total_size = prcv->total_size;
 		pret->size = prcv->size;
@@ -2979,16 +2986,14 @@ void fg_daemon_get_data(
 	case FUEL_GAUGE_TABLE_CUSTOM_DATA:
 		{
 			char *ptr;
-
-			if (sizeof(struct fuel_gauge_table_custom_data)
-				!= prcv->total_size) {
-				bm_err("size is different %d %d\n",
-				(int)sizeof(
-				struct fuel_gauge_table_custom_data),
-				prcv->total_size);
-			}
-
 			ptr = (char *)&fg_table_cust_data;
+			if (prcv->idx > sizeof(fg_table_cust_data) ||
+			    prcv->size > sizeof(fg_table_cust_data) - prcv->idx ||
+			    prcv->size > sizeof(prcv->input)) {
+				bm_err("size is different size %d idx %d  struct size %d",
+					pret->size, pret->idx, (int)sizeof(fg_table_cust_data));
+				return;
+			}
 			memcpy(pret->input, &ptr[prcv->idx], pret->size);
 			bm_debug(
 				"FG_DATA_TYPE_TABLE type:%d size:%d %d idx:%d\n",
@@ -3563,7 +3568,10 @@ void bmd_ctrl_cmd_from_user(void *nl_data, struct fgd_nl_msg_t *ret_msg)
 			bm_err("[fr] data len:%d custom data length = %d\n",
 				(int)sizeof(fg_cust_data),
 				ret_msg->fgd_data_len);
-
+			if (ret_msg->fgd_ret_data_len > (int)sizeof(fg_cust_data)) {
+				bm_err("[fr] The size of data receive is not applicable to copy");
+				break;
+			}
 			memcpy(ret_msg->fgd_data,
 				&fg_cust_data, sizeof(fg_cust_data));
 			ret_msg->fgd_data_len += sizeof(fg_cust_data);
@@ -3660,7 +3668,6 @@ void bmd_ctrl_cmd_from_user(void *nl_data, struct fgd_nl_msg_t *ret_msg)
 		int fg_coulomb = 0;
 
 		fg_coulomb = gauge_get_coulomb();
-
 		memcpy(&gm.fg_bat_int1_gap,
 			&msg->fgd_data[0], sizeof(gm.fg_bat_int1_gap));
 
@@ -4489,14 +4496,22 @@ void bmd_ctrl_cmd_from_user(void *nl_data, struct fgd_nl_msg_t *ret_msg)
 
 	case FG_DAEMON_CMD_DUMP_LOG:
 	{
+		int len;
 		gm.proc_subcmd = msg->fgd_subcmd;
 		gm.proc_subcmd_para1 = msg->fgd_subcmd_para1;
+		len = (int)strnlen(&msg->fgd_data[0],
+			min_t(size_t, msg->fgd_data_len, sizeof(gm.proc_log)));
+		bm_err("[fr] FG_DAEMON_CMD_DUMP_LOG %d", len);
 		memset(gm.proc_log, 0, 4096);
-		strncpy(gm.proc_log, &msg->fgd_data[0],
-			strlen(&msg->fgd_data[0]));
-		bm_err("[fr] FG_DAEMON_CMD_DUMP_LOG %d %d %d\n",
-			msg->fgd_subcmd, msg->fgd_subcmd_para1,
-			(int)strlen(&msg->fgd_data[0]));
+		if (len < 4096) {
+			strncpy(gm.proc_log, &msg->fgd_data[0],
+				len);
+			bm_err("[fr] FG_DAEMON_CMD_DUMP_LOG %d %d %d\n",
+				msg->fgd_subcmd, msg->fgd_subcmd_para1,
+				len);
+		} else {
+			bm_err("[fr] FG_DAEMON_CMD_DUMP_LOG size of dump is more than limit");
+		}
 	}
 	break;
 
