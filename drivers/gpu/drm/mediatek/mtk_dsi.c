@@ -4052,6 +4052,7 @@ bool mtk_dsi_is_cmd_mode(struct mtk_ddp_comp *comp)
 		return true;
 }
 
+#ifdef DSI_KE_CLOCK_DEBUG
 int mtk_dsi_get_clk_refcnt(struct mtk_ddp_comp *comp)
 {
 	struct mtk_dsi *dsi;
@@ -4060,6 +4061,7 @@ int mtk_dsi_get_clk_refcnt(struct mtk_ddp_comp *comp)
 
 	return dsi->clk_refcnt;
 }
+#endif
 
 static const char *mtk_dsi_get_porch_str(enum dsi_porch_type type)
 {

@@ -502,11 +502,15 @@ static void mtk_drm_crtc_destroy_state(struct drm_crtc *crtc,
 				       struct drm_crtc_state *state)
 {
 	struct mtk_crtc_state *s;
+	struct mtk_drm_crtc *mtk_crtc;
 
 	s = to_mtk_crtc_state(state);
+	mtk_crtc = to_mtk_crtc(crtc);
 
+	DDP_MUTEX_LOCK(&mtk_crtc->state_lock, __func__, __LINE__);
 	__drm_atomic_helper_crtc_destroy_state(state);
 	kfree(s);
+	DDP_MUTEX_UNLOCK(&mtk_crtc->state_lock, __func__, __LINE__);
 }
 
 static int mtk_drm_crtc_set_property(struct drm_crtc *crtc,
@@ -578,6 +582,12 @@ struct mtk_ddp_comp *mtk_crtc_get_comp(struct drm_crtc *crtc,
 		DDPPR_ERR("invalid ddp mode:%d!\n", mtk_crtc->ddp_mode);
 		return NULL;
 	}
+
+	if (unlikely(path_id >= DDP_PATH_NR)) {
+		DDPPR_ERR("invalid path id:%u!\n", path_id);
+		return NULL;
+	}
+
 	return ddp_ctx[mtk_crtc->ddp_mode].ddp_comp[path_id][comp_idx];
 }
 
@@ -2225,6 +2235,7 @@ static void mtk_crtc_update_hrt_state_ex(struct drm_crtc *crtc,
 	unsigned int  ovl0_2l_no_compress_num =
 		HRT_GET_NO_COMPRESS_FLAG(lyeblob_ids->hrt_num);
 	unsigned int max_fps = mtk_crtc->max_fps;
+	struct mtk_drm_private *priv = crtc->dev->dev_private;
 
 	DDPINFO("%s bw=%d, last_hrt_req=%d\n",
 			__func__, bw, mtk_crtc->qos_ctx->last_hrt_req);
@@ -2243,6 +2254,21 @@ static void mtk_crtc_update_hrt_state_ex(struct drm_crtc *crtc,
 			bw < 3433) {
 			bw = 3433;
 			DDPINFO("%s CRTC%u dram freq to 2400hz\n",
+				__func__, crtc_idx);
+		}
+	}
+
+
+	/* Workaround for 3k panel BW limitation */
+	if (crtc_idx == 0 && mtk_crtc->base.state->adjusted_mode.hdisplay > 2900
+		&& priv->data->mmsys_id == MMSYS_MT6877) {
+		if (ovl0_2l_no_compress_num == 1 && bw < 3840) {
+			bw = 3840;
+			DDPINFO("%s CRTC%u dram freq to 1866\n",
+				__func__, crtc_idx);
+		} else if (ovl0_2l_no_compress_num == 2 && bw < 6400) {
+			bw = 6400;
+			DDPINFO("%s CRTC%u dram freq to 3733\n",
 				__func__, crtc_idx);
 		}
 	}
@@ -5239,11 +5265,12 @@ void mtk_drm_crtc_disable(struct drm_crtc *crtc, bool need_wait)
 
 	/* 10. power off MTCMOS*/
 	/* TODO: need to check how to unprepare MTCMOS */
+#ifdef DSI_KE_CLOCK_DEBUG
 	if (mtk_dsi_get_clk_refcnt(output_comp) != 0)
 		DDPPR_ERR("%s: clk_refcnt = %d, dsi is not off when disable mtcmos\n",
 			__func__, mtk_dsi_get_clk_refcnt(output_comp));
+#endif
 	mtk_drm_top_clk_disable_unprepare(crtc->dev);
-
 	/* Workaround: if CRTC2, reset wdma->fb to NULL to prevent CRTC2
 	 * config wdma and cause KE
 	 */
@@ -6858,7 +6885,7 @@ void mtk_crtc_vblank_irq(struct drm_crtc *crtc)
  *		hwc_pid, 0);
  *	mtk_drm_trace_c("%s", tag_name);
  */
-	mtk_drm_trace_c("%d|DISP-HW_Vsync|%lld",
+	mtk_drm_trace_c("%d|DISP-HW_Vsync|%d",
 		hwc_pid, 0);
 }
 
@@ -7455,6 +7482,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
 
 	mutex_init(&mtk_crtc->lock);
 	mutex_init(&mtk_crtc->cwb_lock);
+	mutex_init(&mtk_crtc->state_lock);
 	mtk_crtc->config_regs = priv->config_regs;
 	mtk_crtc->config_regs_pa = priv->config_regs_pa;
 	mtk_crtc->mmsys_reg_data = priv->reg_data;
