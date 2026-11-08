@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2015-2019 TrustKernel Incorporated
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  */
 
 #include <linux/slab.h>
@@ -413,7 +423,7 @@ static int __tee_ns_shm_vma_fault(struct vm_fault *vmf)
 	struct page *page;
 
 	if (vmf->pgoff >= shm->ns.nr_pages)
-		return VM_FAULT_ERROR;
+		return VM_FAULT_SIGBUS;
 
 	page = shm->ns.pages[vmf->pgoff];
 	get_page(page);
