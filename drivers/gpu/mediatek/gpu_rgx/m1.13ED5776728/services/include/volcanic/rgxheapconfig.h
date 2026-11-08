@@ -49,7 +49,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /*
 	RGX Device Virtual Address Space Definitions:
 
-
 	RGX_PDSCODEDATA_HEAP_BASE and RGX_USCCODE_HEAP_BASE will be programmed, on a
 	global basis, into RGX_CR_PDS_EXEC_BASE and RGX_CR_USC_CODE_BASE_*
 	respectively. Therefore if clients use multiple configs they must still be
@@ -66,10 +65,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #ifdef CONFIG_MTK_GPU_PVR_LEGACY
-	/* GENERAL_SVM_HEAP - Start at 4MiB, Size of 512GiB less 4MiB */
-	/* 0x0000400000 - 0x7FFFC00000 */
-	#define RGX_GENERAL_SVM_HEAP_BASE			IMG_UINT64_C(0x0000400000)
-	#define RGX_GENERAL_SVM_HEAP_SIZE			IMG_UINT64_C(0x7FFFC00000)
+	/* Start at 4 MiB, size of 512 GiB less 4 MiB. */
+	#define RGX_GENERAL_SVM_HEAP_BASE           IMG_UINT64_C(0x0000400000)
+	#define RGX_GENERAL_SVM_HEAP_SIZE           IMG_UINT64_C(0x7FFFC00000)
 #else
 	/* GENERAL_SVM_HEAP - Start at 2MiB, Size of 512GiB less 2MiB */
 	/* 0x0000200000 - 0x7FFFC00000 */
