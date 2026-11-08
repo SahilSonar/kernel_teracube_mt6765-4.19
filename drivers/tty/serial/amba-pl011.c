@@ -1219,7 +1219,7 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
 
 	if (uap->using_rx_dma) {
 		if (uap->dmarx.poll_rate)
-			timer_delete_sync(&uap->dmarx.timer);
+			del_timer_sync(&uap->dmarx.timer);
 		dmaengine_terminate_sync(uap->dmarx.chan);
 		/* Clean up the RX DMA */
 		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_a, DMA_FROM_DEVICE);
