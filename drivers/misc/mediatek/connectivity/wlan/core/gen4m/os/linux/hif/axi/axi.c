@@ -450,7 +450,8 @@ static int axiDmaSetup(struct platform_device *pdev,
 	ret = _init_resv_mem(pdev);
 	if (ret)
 		goto exit;
-	ret = of_reserved_mem_device_init(&pdev->dev);
+	if (!pdev->dev.dma_mem)
+		ret = of_reserved_mem_device_init(&pdev->dev);
 	if (ret) {
 		DBGLOG(INIT, ERROR, "of_reserved_mem_device_init failed(%d).\n",
 				ret);
